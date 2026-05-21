@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="conditional_processing_values_and_groups">
+    <title>条件处理属性的字符串值和分组值</title>
+    <shortdesc>条件处理属性使用元数据对元素进行分类，元数据以属性值的形式呈现。属性值包括字符串值（string value）和分组值（group
+        value）两种形式。</shortdesc>
+    <conbody>
+        <p>多个字符串值以空格分隔，例如在 <codeph>&lt;p product="basic deluxe"></codeph>
+                中，<codeph>@product</codeph> 属性表示该段落适用于“basic”产品和“deluxe”产品。</p>
+        <p>分组值指将属性值进一步划分为更小的分组，用于处理某个属性可能包含多个专门的子类别的情况。例如，@product
+            属性可能同时包含“手机”和“电脑”两个子类别。通过使用分组值，每个子类别可以被独立处理：当某个分组内的所有属性值都被过滤条件排除时，无论其他过滤条件如何，该元素都可以被安全地排除。</p>
+        <p>支持分组值的属性包括
+                <codeph>@audience</codeph>、<codeph>@product</codeph>、<codeph>@platform</codeph> 和
+                <codeph>@otherprops</codeph>。分组值应满足以下规则：</p>
+        <p>
+            <ul id="ul_epj_drf_3jc">
+                <li><p>分组值的组名紧挨着括号，括号内紧挨着零个或多个由空格分隔的字符串值。例如：<codeph>"groupName(valueOne
+                            valueTwo)"</codeph>。</p></li>
+                <li><p>分组值不能嵌套。</p></li>
+                <li>
+                    <p>如果同一属性中出现两个同名的分组，两个分组的值应被视为属于同一个分组。例如，<codeph>@otherprops</codeph>
+                        的以下两个值等价：</p>
+                    <p><codeph>otherprops="groupA(a b) groupA(c) groupZ(APPNAME)"</codeph></p>
+                    <p><codeph>otherprops="groupA(a b c) groupZ(APPNAME)"</codeph></p>
+                </li>
+                <li>
+                    <p>如果同一属性中同时出现分组值和未分组的值，未分组的值应被视为属于一个隐式分组，该隐式分组的名称与属性名相同。例如，<codeph>@product</codeph>
+                        的以下两个值等价：</p>
+                    <p><codeph>product="a database(dbA dbB) b appserver(mySERVER) c"</codeph></p>
+                    <p><codeph>product="product(a b c) database(dbA dbB)
+                            appserver(mySERVER)"</codeph></p>
+                </li>
+            </ul>
+        </p>
+        <p>如果不同的属性包含相同的分组名，则 DITAVAL 文件中为该分组指定的条件处理规则将同时应用于每个属性。 例如，如果分组 "sampleGroup" 同时出现在
+                <codeph>@platform</codeph> 和 <codeph>@otherprops</codeph> 中，则 DITAVAL 文件中针对
+            "sampleGroup" 的规则会同时作用于 <codeph>@platform</codeph> 和
+            <codeph>@otherprops</codeph>。如果需要区分同名分组，最佳实践是使用更具体的分组名，如 platformGroupname 和
+            productGroupname。或者，也可以基于属性名（而非分组名）来指定 DITAVAL 规则。</p>
+        <p>不同属性使用相同的分组名还可能导致一种复杂情况：DITAVAL
+            文件中为每个属性设置了不同的默认规则，但没有为分组或单个值设置规则。这可能导致同一个分组值在不同属性上的条件处理结果不同。例如，对于 <codeph>&lt;p
+                platform="oddgroup(edgecase)" product="oddgroup(edgecase)"></codeph>，DITAVAL 文件中将
+                <codeph>@platform</codeph> 的默认值设为 "exclude"，将 <codeph>@product</codeph> 的默认值设为
+            "flag"。如果没有为分组 <codeph>oddgroup</codeph> 或值 <codeph>edgecase</codeph> 指定任何规则，那么
+                <codeph>platform="oddgroup(edgecase)" </codeph>的条件处理结果为 "exclude"，而
+                <codeph>product="oddgroup(edgecase)"</codeph> 的条件处理结果为 "flag"。 </p>
+        <p>
+            <note id="note_v1n_jrf_3jc"
+                    ><codeph>@audience</codeph>、<codeph>@platform</codeph>、<codeph>@product</codeph>
+                和 <codeph>@otherprops</codeph> 属性的分组值语法和属性泛化语法相同；但是，这些属性本身不能被特化或泛化。</note>
+        </p>
+    </conbody>
+</concept>
